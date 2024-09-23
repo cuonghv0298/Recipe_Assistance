@@ -1,0 +1,50 @@
+version: '3.4'
+services:
+  weaviate:
+    command:
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8080'
+    - --scheme
+    - http
+    image: semitechnologies/weaviate:1.23.10 # Adjust version if needed
+    ports:
+    - 8080:8080
+    - 50051:50051
+    volumes:
+    - weaviate_data:/var/lib/weaviate
+    restart: on-failure:0
+    environment:
+      ## general
+      # ORIGIN: https://my-weaviate-deployment.com
+      QUERY_DEFAULTS_LIMIT: 25
+      QUERY_MAXIMUM_RESULTS: 10000     
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      AUTOSCHEMA_ENABLED: true
+      ENABLE_MODULES: 'text2vec-transformers,text2vec-openai'
+      DEFAULT_VECTORIZER_MODULE: 'text2vec-transformers'      
+      ## Module-specific
+      TRANSFORMERS_INFERENCE_API: http://t2v-transformers:8080
+      ## Authentication
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      # Enables API key authentication.
+      # AUTHENTICATION_APIKEY_ENABLED: 'true'
+      # List one or more keys, separated by commas. Each key corresponds to a specific user identity below.
+      # AUTHENTICATION_APIKEY_ALLOWED_KEYS: 'this-is-a-secret-key-for-me, this-is-a-secret-key-for-admin'
+      # List one or more user identities, separated by commas. Each identity corresponds to a specific key above.
+      # AUTHENTICATION_APIKEY_USERS: 'this-is-me, this-is-admin'
+      ## Authorization
+      # AUTHORIZATION_ADMINLIST_ENABLED: 'true'
+      # AUTHORIZATION_ADMINLIST_USERS: 'this-is-admin'
+      # AUTHORIZATION_ADMINLIST_READONLY_USERS: 'this-is-me'
+      ## Multi-node setups
+      CLUSTER_HOSTNAME: 'node1'
+      # CLUSTER_JOIN: weaviate-node-1:7100
+  t2v-transformers:
+    image: semitechnologies/transformers-inference:sentence-transformers-multi-qa-MiniLM-L6-cos-v1
+    environment:
+      ENABLE_CUDA: 0 # set to 1 to enable
+      # NVIDIA_VISIBLE_DEVICES: all # enable if running with CUDA
+volumes:
+  weaviate_data:

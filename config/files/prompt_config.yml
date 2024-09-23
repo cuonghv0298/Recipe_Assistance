@@ -1,0 +1,17 @@
+# config.yaml
+
+prompt:
+  condense_question_prompt: |
+    Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language.
+    Make sure to avoid using any unclear pronouns.
+    Chat History: {chat_history}
+    User question: {question}
+    Standalone question:
+  combine_docs_prompt: |
+    System: Answer the question based only on the following context. Provide the evidence and reasoning in your answer. If the intention of the question is greetings you can start the conversation by giving a greet and asking the health status today. Otherwise, if you can't answer the question given the context, just return "None"
+    Context:
+    ####
+    {context}
+    ####
+    User: {question}
+  

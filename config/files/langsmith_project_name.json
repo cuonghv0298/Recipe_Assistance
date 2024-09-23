@@ -1,0 +1,6 @@
+{
+    "chatbot": "This project monitors what happen when attendee ask our RAG system",
+    "generate_QA_by_LLM": "This project monitors why LLM generate QA for evaluation",
+    "generate_answer": "This project monitors our RAG generate the answer in evaluation phase",
+    "evaluators": "This project monitors how LLM calculate the score wiht our RAG system"
+}
