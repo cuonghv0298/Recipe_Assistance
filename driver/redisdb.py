@@ -47,7 +47,7 @@ class RedisDB:
         self.__pwd = os.environ.get(REDIS_PWD) or None
 
     def connect(self, db: int = 0, with_pwd: bool = True) -> bool:
-        print("----------redis self.__host:", self.__host)
+        # print("----------redis self.__host:", self.__host)
         try:
             db = 0 if (db < 0 or db > 15) else db
             if with_pwd and self.__pwd != None:

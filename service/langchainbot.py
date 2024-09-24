@@ -29,8 +29,7 @@ from langchain_openai import OpenAI
 
 
 # Additional imports for database drivers and system instructions
-from src.driver import redisdb, weaviatedb
-from src import utils
+from driver import redisdb, weaviatedb
 from uuid import uuid4
 from langchain_core.tracers.context import collect_runs
 
@@ -45,12 +44,12 @@ class LangChainBot:
 
     def __init__(
             self,
-            debug=True,
+            debug=False,
             init_params: Dict[str, Any] = {},
     ):
         # self.retry_parser, self.prompt_value = self.create_retry_parser_for_final_answer()
         self.debug = debug
-        print(f"LangChainBot:\tInitialization")
+        # print(f"LangChainBot:\tInitialization")
     #
 
     @classmethod
@@ -131,7 +130,7 @@ class LangChainBot:
             embedding
     ):
         self.__llm_embedding = embedding
-        print(f"LangChainBot:\t embedding_configure: {embedding}")
+        # print(f"LangChainBot:\t embedding_configure: {embedding}")
         return True
 
     # def system_instruction(
@@ -165,11 +164,11 @@ class LangChainBot:
                     f"LangChainBot:\tKnowledge database can not connected.")
             self.__retriever = driver
             self.__knowledge_configure = True
-            print(
-                f"LangChainBot:\tknowledge base retriever: {knowledge_driver}")
+            # print(
+            #     f"LangChainBot:\tknowledge base retriever: {knowledge_driver}")
             return True
         except Exception as e:
-            print(f'Cannot connect self.__retriever with weaviate {str(e)}')
+            # print(f'Cannot connect self.__retriever with weaviate {str(e)}')
             self.__retriever = None
             self.__knowledge_configure = False
             return False
@@ -186,9 +185,8 @@ class LangChainBot:
                     f"LangChainBot:\tHistory database is not connected.")
             self.__history = driver
             self.__history_configure = True
-            print(f"LangChainBot:\tchat history retriever: {history_driver}")
+            # print(f"LangChainBot:\tchat history retriever: {history_driver}")
             return True
-            print()
         except Exception as e:
             print(str(e))
             self.__history = None
@@ -219,7 +217,7 @@ class LangChainBot:
                         f"LangChainBot:\tHistory database is not connected.")
                 self.__history = history_store
                 self.__history_configure = True
-            print(f"LangChainBot:\tchat history store: using FastAPIApp history store.")
+            # print(f"LangChainBot:\tchat history store: using FastAPIApp history store.")
             return True
         except Exception as e:
             print(str(e))
@@ -244,8 +242,8 @@ class LangChainBot:
             if not chain:
                 raise Exception(f"LangChainBot:\tCan not init {llm_core}")
             self.__condense_question_chain = chain
-            print(
-                f"LangChainBot:\tCondense question chain configure: {chain_core} --- {llm_core}")
+            # print(
+            #     f"LangChainBot:\tCondense question chain configure: {chain_core} --- {llm_core}")
             return True
         except Exception as e:
             print(str(e))
@@ -286,30 +284,16 @@ class LangChainBot:
                 raise Exception(
                     f"LangChainBot:\tCan not init {stuff_chain_core}")
             self.__combine_docs_chain = chain
-            print(
-                f"LangChainBot:\tCombine documents chain configure: {chain_core} --- {llm_core}")
+            # print(
+            #     f"LangChainBot:\tCombine documents chain configure: {chain_core} --- {llm_core}")
             return True
         else:
             try:
-                # final_answer = ResponseSchema(
-                # 			name="final_answer",
-                # 			description="The final answer",
-                # 		)
-                # output_parser = StructuredOutputParser.from_response_schemas(
-                # 	[final_answer]
-                # )
-                # format_instructions = output_parser.get_format_instructions()
-                # prompt =  PromptTemplate.from_template(
-                # 	prompt_core_template, output_parser = output_parser
-                # )
-                # prompt.format(
-                # 	format_instructions=format_instructions,
-                # )
 
                 llm_chain = chain_core(
                     llm=llm_core(**llm_core_params),
                     prompt=PromptTemplate.from_template(prompt_core_template),
-                    verbose=True,
+                    verbose=False,
                 )
                 if not llm_chain:
                     raise Exception(
@@ -318,21 +302,21 @@ class LangChainBot:
                 document_prompt = PromptTemplate(
                     input_variables=["page_content"],
                     template="""
-					page content: {page_content}"""
+                    {page_content}\n"""
                 )
                 chain = stuff_chain_core(
                     llm_chain=llm_chain,
                     document_prompt=document_prompt,
                     document_variable_name="context",
-                    verbose=True,
+                    verbose=False,
                     # call_back =
                 )
                 if not chain:
                     raise Exception(
                         f"LangChainBot:\tCan not init {stuff_chain_core}")
                 self.__combine_docs_chain = chain
-                print(
-                    f"LangChainBot:\tCombine documents chain configure: {chain_core} --- {llm_core}")
+                # print(
+                #     f"LangChainBot:\tCombine documents chain configure: {chain_core} --- {llm_core}")
                 return True
 
             except Exception as e:
@@ -356,7 +340,7 @@ class LangChainBot:
                 return_messages=True,
                 # **memory_core_params,
             )
-            print(f"LangChainBot:\tMemory configure: {memory_core}")
+            # print(f"LangChainBot:\tMemory configure: {memory_core}")
             self.__memory = memory
             self.__memory_configure = True
             return True
@@ -437,7 +421,7 @@ class LangChainBot:
             # self.evaluation_chain = chain_constructor()
             # Deal with chat history using session_id
             if runnable_chain and self.has_history_store():
-                print('--------WE USE RunnableWithMessageHistory')
+                # print('--------WE USE RunnableWithMessageHistory')
                 chain = RunnableWithMessageHistory(
                     qa,
                     lambda session_id: self.__history.get_langchain_chat_message_history(
@@ -449,7 +433,7 @@ class LangChainBot:
                 self.__runnable_chain = True
             # Without chat history, buffer memory only
             else:
-                print('--------WE buffer memory only')
+                # print('--------WE buffer memory only')
                 chain = qa
                 self.__runnable_chain = False
             ##
@@ -461,7 +445,7 @@ class LangChainBot:
 
             # self.evaluation_chain = chain
             self.__stack_chain = True
-            print(f"LangChainBot:\tchain: {chain_core}")
+            # print(f"LangChainBot:\tchain: {chain_core}")
             return True
         except Exception as e:
             print(str(e))
@@ -478,39 +462,32 @@ class LangChainBot:
     ):
         try:
             msg = ""
-            with collect_runs() as runs_cb:
-                if self.__runnable_chain:
-                    print('LANGCHAINBOT|	WE,RE USING SESSION ID')
-                    output = await self.__chain.ainvoke(
-                        {
-                            "question": question,  
-                        },
-                        config={"configurable": {"session_id": session_id}},
-                        # include_run_info= True, 
-                    )
-                else:
-                    output = self.__chain(
-                        {
-                            "question": question,
-                        },
-                    )
-                run_id = runs_cb.traced_runs[0].id
+            if self.__runnable_chain:
+                # print('LANGCHAINBOT|	WE,RE USING SESSION ID')
+                output = await self.__chain.ainvoke(
+                    {
+                        "question": question,  
+                    },
+                    config={"configurable": {"session_id": session_id}},
+                    # include_run_info= True, 
+                )
+            else:
+                output = await self.__chain(
+                    {
+                        "question": question,
+                    },
+                )
             # print(f'------The answer response: {output}')
             # print(f'------The run_id: {run_id}')
             answer = f'{output["answer"]}'
             # result = self.retry_parser.parse_with_prompt(str(output), self.prompt_value)
-            is_none = utils.check_is_none(answer)
             answer = {
                 'chatbot_answer': f'{output["answer"]}',
-                'is_none': is_none,
-                "__run":{
-                    'run_id': run_id
-                }
                 
             }
             return answer, msg
         except Exception as e:
-            print(str(e))
+            print('Chatbot error: ',str(e))
             traceback.print_exc()
             # return {"bot" : "this is a sample response for debugger"}, ""
             return "_", e

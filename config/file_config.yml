@@ -1,6 +1,0 @@
-llm_env:
-  prompting_file: "config/files/prompt_config.yml"
-
-langsmith_env:
-  enable: True
-  project_name_file: "config/files/langsmith_project_name.json"

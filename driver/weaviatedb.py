@@ -68,24 +68,27 @@ class WeaviateDB:
                 connect_type=connect_type,
                 hybrid_search=hybrid_search,
             )
-            print('----------self.__host:', self.__host)
-            print('----------update_connect_type:', update_connect_type)
-            print('----------hybrid_search:', hybrid_search)
+            # print('----------self.__host:', self.__host)
+            # print('----------update_connect_type:', update_connect_type)
+            # print('----------hybrid_search:', hybrid_search)
             # try to connect by 3 methods
             if "AuthAPIKey" in update_connect_type and self.__connect_APIKey(hybrid_search=hybrid_search):
                 self.check_connection()
-                print("-------Weaviate Client connect with AuthAPIKey")
+                # print("-------Weaviate Client connect with AuthAPIKey")
             elif "ClientPassword" in update_connect_type and self.__connect_ClientPassword(hybrid_search=hybrid_search):
-                print("--------Weaviate Client connect with ClientPassword")
+                pass
+            #     print("--------Weaviate Client connect with ClientPassword")
             elif "ANONYMOUS" in update_connect_type and self.__connect_ANONYMOUS(hybrid_search=hybrid_search):
-                print("Weaviate Client connect with ANONYMOUS")
+                pass
+            #     print("Weaviate Client connect with ANONYMOUS")
             elif "localhost" in update_connect_type and self.__connect_with_localhost():
-                print("Weaviate Client connect with localhost")
+                pass
+            #     print("Weaviate Client connect with localhost")
             else:
-                print("Can not connect to Weavitae HOST")
+                # print("Can not connect to Weavitae HOST")
                 raise Exception(
                     "Weaviate Client can not connect or cannot access by any connect method")
-            print("------VectorDB client:", self.__client)
+            # print("------VectorDB client:", self.__client)
         except Exception as e:
             print(str(e))
     # return connect_type if None or empty env
@@ -233,8 +236,8 @@ class WeaviateDB:
                         ),
                         additional_headers=additional_headers,
                     )
-                    print(
-                        f"Connect into {self.__host} with AuthClientPassword and enabled hybrid search with {self.__api_keys.keys()}")
+                    # print(
+                    #     f"Connect into {self.__host} with AuthClientPassword and enabled hybrid search with {self.__api_keys.keys()}")
                     self.__connected = True
                     self.__connect_type = "ClientPassword"
                     self.__hybrid_search = True
@@ -255,7 +258,7 @@ class WeaviateDB:
                 ),
                 additional_headers=additional_headers,
             )
-            print(f"Connect into {self.__host} with AuthClientPassword")
+            # print(f"Connect into {self.__host} with AuthClientPassword")
             self.__connected = True
             self.__connect_type = "ClientPassword"
             self.__hybrid_search = False
@@ -351,7 +354,7 @@ class WeaviateDB:
             k: int = 4,
     ) -> Optional[WeaviateLC]:
         try:
-            print('------retriever embedding:', embedding)
+            # print('------retriever embedding:', embedding)
             vectorstore = WeaviateLC(
                 client=self.__client,
                 index_name=index_name or self.__rag_index_name,
