@@ -271,7 +271,7 @@ class LangChainBot:
             document_prompt = PromptTemplate(
                 input_variables=["page_content"],
                 template="""
-				{page_content}\n"""
+				\n Recipe information: \n {page_content}\n {metadata}"""
             )
             chain = stuff_chain_core(
                 llm_chain=llm_chain,
@@ -289,7 +289,7 @@ class LangChainBot:
             return True
         else:
             try:
-
+                
                 llm_chain = chain_core(
                     llm=llm_core(**llm_core_params),
                     prompt=PromptTemplate.from_template(prompt_core_template),
@@ -300,16 +300,15 @@ class LangChainBot:
                         f"LangChainBot:\tCan not init {chain_core}")
                 #
                 document_prompt = PromptTemplate(
-                    input_variables=["page_content"],
+                    input_variables=["page_content","metadata"],
                     template="""
-                    {page_content}\n"""
+                    \n Recipe information: \n {page_content}\n {metadata}"""
                 )
                 chain = stuff_chain_core(
                     llm_chain=llm_chain,
                     document_prompt=document_prompt,
                     document_variable_name="context",
                     verbose=False,
-                    # call_back =
                 )
                 if not chain:
                     raise Exception(
